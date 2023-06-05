@@ -96,6 +96,7 @@ namespace MyWebApiApp.Controllers
             catch
             {
                 return BadRequest();
+
             }
         }
     }

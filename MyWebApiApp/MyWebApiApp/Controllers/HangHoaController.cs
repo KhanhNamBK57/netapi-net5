@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MyWebApiApp.Data;
 using MyWebApiApp.Models;
 using System;
 using System.Collections.Generic;
@@ -8,96 +9,111 @@ using System.Threading.Tasks;
 
 namespace MyWebApiApp.Controllers
 {
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    public class HangHoaController : ControllerBase
-    {
-        public static List<HangHoa> hangHoas = new List<HangHoa>();
+	[Route("api/[controller]/[action]")]
+	[ApiController]
+	public class HangHoaController : ControllerBase
+	{
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            return Ok(hangHoas);
-        }
-        [HttpGet("{id}")]
-        public IActionResult GetById(string id)
-        {
-            try
-            {
-                var hangHoa = hangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                return Ok(hangHoa);
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-        [HttpPost]
-        public IActionResult Create(HangHoaVM hangHoaVM)
-        {
-            var hanghoa = new HangHoa
-            {
-                IdHangHoa = Guid.NewGuid(),
-                TenHangHoa = hangHoaVM.TenHangHoa,
-                DonGia = hangHoaVM.DonGia
-            };
-            hangHoas.Add(hanghoa);
+		private readonly MyDbContext _context;
+		public HangHoaController(MyDbContext context)
+		{
+			_context = context;
+		}
 
-            return Ok(new{
-                Success = true,
-                Data = hanghoa
-            });
-        }
+		[HttpGet]
+		public IActionResult GetAll()
+		{
+			var dsHangHoa = _context.HangHoas.ToList();
+			return Ok(dsHangHoa);
+		}
+		[HttpGet("{id}")]
+		public IActionResult GetById(string id)
+		{
+			try
+			{
+				var hangHoa = _context.HangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
+				if (hangHoa == null)
+				{
+					return NotFound();
+				}
+				return Ok(hangHoa);
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+		[HttpPost]
+		public IActionResult Create(HangHoaVM hangHoaVM)
+		{
+			var hanghoa = new HangHoa
+			{
+				IdHangHoa = Guid.NewGuid(),
+				TenHangHoa = hangHoaVM.TenHangHoa,
+				DonGia = hangHoaVM.DonGia
+			};
+			_context.Add(hanghoa);
+			_context.SaveChanges();
 
-        [HttpPut("{id}")]
-        public IActionResult Edit(string id, HangHoa hangHoaEdit)
-        {
-            try
-            {
-                if (Guid.Parse(id) != hangHoaEdit.IdHangHoa)
-                {
-                    return BadRequest();
-                }
+			return Ok(new
+			{
+				Success = true,
+				Data = hanghoa
+			});
+		}
 
-                var hangHoa = hangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                // Update
-                hangHoa.TenHangHoa = hangHoaEdit.TenHangHoa;
-                hangHoa.DonGia = hangHoaEdit.DonGia;
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest();
-            }
-        }
-        [HttpDelete("{id}")]
-        public IActionResult Remove(string id)
-        {
-            try
-            {
-               
-                var hangHoa = hangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
-                if (hangHoa == null)
-                {
-                    return NotFound();
-                }
-                // Update
-                hangHoas.Remove(hangHoa);
-                return Ok();
-            }
-            catch
-            {
-                return BadRequest();
+		[HttpPut("{id}")]
+		public IActionResult Edit(string id, HangHoa hangHoaEdit)
+		{
+			try
+			{
+				if (Guid.Parse(id) != hangHoaEdit.IdHangHoa)
+				{
+					return BadRequest();
+				}
+				var hangHoa = _context.HangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
+				if (hangHoa != null)
+				{
+					// Update
+					hangHoa.TenHangHoa = hangHoaEdit.TenHangHoa;
+					hangHoa.DonGia = hangHoaEdit.DonGia;
+					_context.SaveChanges();
+					return NoContent();	
+				}else
+				{
+					return NotFound();
+				}
+			}
+			catch
+			{
+				return BadRequest();
+			}
+		}
+		[HttpDelete("{id}")]
+		public IActionResult Remove(string id)
+		{
+			try
+			{
 
-            }
-        }
-    }
+				var hangHoa = _context.HangHoas.SingleOrDefault(hh => hh.IdHangHoa == Guid.Parse(id));
+				if (hangHoa != null)
+				{
+					// Update
+					_context.Remove(hangHoa);
+					_context.SaveChanges();
+					return NoContent();
+				}
+				else
+				{
+					return BadRequest();
+				}
+				
+			}
+			catch
+			{
+				return BadRequest();
+
+			}
+		}
+	}
 }

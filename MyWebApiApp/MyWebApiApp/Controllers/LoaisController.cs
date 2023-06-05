@@ -25,9 +25,9 @@ namespace MyWebApiApp.Controllers
             return Ok(dsLoai);
         }
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public IActionResult GetById(string id)
         {
-            var loai = _context.Loais.SingleOrDefault(lo => lo.MaLoai == id);
+            var loai = _context.Loais.SingleOrDefault(lo => lo.IdLoai == Guid.Parse(id));
             if (loai != null)
             {
                 return Ok(loai);
@@ -42,11 +42,12 @@ namespace MyWebApiApp.Controllers
         {
             try
             {
-                var loai = new Loai
+            var loai = new Loai
                 {
+                    IdLoai = Guid.NewGuid(),
                     TenLoai = model.TenLoai
                 };
-                _context.Add(model);
+                _context.Add(loai);
                 _context.SaveChanges();
                 return Ok(loai);
             }
@@ -58,9 +59,9 @@ namespace MyWebApiApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult Update(int id, LoaiModel model)
+        public IActionResult Update(string id, LoaiModel model)
         {
-            var loai = _context.Loais.SingleOrDefault(lo => lo.MaLoai == id);
+            var loai = _context.Loais.SingleOrDefault(lo => lo.IdLoai == Guid.Parse(id));
             if (loai != null)
             {
                 loai.TenLoai = model.TenLoai;

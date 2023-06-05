@@ -30,9 +30,9 @@ namespace MyWebApiApp
         {
 
             services.AddControllers();
-            services.AddDbContext<MyDbContext>(option =>
+            services.AddEntityFrameworkNpgsql().AddDbContext<MyDbContext>(option =>
             {
-                option.UseSqlServer(Configuration.GetConnectionString("MyDB"));
+                option.UseNpgsql(Configuration.GetConnectionString("MyDB"));
             });
             services.AddSwaggerGen(c =>
             {

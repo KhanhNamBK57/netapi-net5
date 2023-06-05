@@ -24,9 +24,9 @@ namespace MyWebApiApp.Data
 
         public byte GiamGia { get; set; }
 
-        public int? MaLoai { get; set; }
+        public Guid? IdLoai { get; set; }
 
-        [ForeignKey("MaLoai")]
+        [ForeignKey("IdLoai")]
         public Loai Loai { get; set; }
     }
 }

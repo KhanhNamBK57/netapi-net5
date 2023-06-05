@@ -11,7 +11,7 @@ namespace MyWebApiApp.Data
     public class Loai
     {
         [Key]
-        public int MaLoai { get; set; }
+        public Guid IdLoai { get; set; }
         [Required]
         [MaxLength(50)]
         public string TenLoai { get; set; }

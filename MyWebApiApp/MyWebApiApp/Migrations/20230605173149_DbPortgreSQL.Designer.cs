@@ -2,68 +2,67 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyWebApiApp.Data;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MyWebApiApp.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20230605091615_AddTblLoai")]
-    partial class AddTblLoai
+    [Migration("20230605173149_DbPortgreSQL")]
+    partial class DbPortgreSQL
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.17")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
             modelBuilder.Entity("MyWebApiApp.Data.HangHoa", b =>
                 {
                     b.Property<Guid>("IdHangHoa")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uuid");
 
                     b.Property<double>("DonGia")
-                        .HasColumnType("float");
+                        .HasColumnType("double precision");
 
                     b.Property<byte>("GiamGia")
-                        .HasColumnType("tinyint");
+                        .HasColumnType("smallint");
 
-                    b.Property<int?>("MaLoai")
-                        .HasColumnType("int");
+                    b.Property<Guid?>("IdLoai")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("MoTa")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("TenHangHoa")
                         .IsRequired()
                         .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                        .HasColumnType("character varying(300)");
 
                     b.HasKey("IdHangHoa");
 
-                    b.HasIndex("MaLoai");
+                    b.HasIndex("IdLoai");
 
                     b.ToTable("HangHoa");
                 });
 
             modelBuilder.Entity("MyWebApiApp.Data.Loai", b =>
                 {
-                    b.Property<int>("MaLoai")
+                    b.Property<Guid>("IdLoai")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uuid");
 
                     b.Property<string>("TenLoai")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                        .HasColumnType("character varying(50)");
 
-                    b.HasKey("MaLoai");
+                    b.HasKey("IdLoai");
 
                     b.ToTable("Loai");
                 });
@@ -72,7 +71,7 @@ namespace MyWebApiApp.Migrations
                 {
                     b.HasOne("MyWebApiApp.Data.Loai", "Loai")
                         .WithMany("HangHoas")
-                        .HasForeignKey("MaLoai");
+                        .HasForeignKey("IdLoai");
 
                     b.Navigation("Loai");
                 });

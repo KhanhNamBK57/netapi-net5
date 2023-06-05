@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MyWebApiApp.Models
 {
-    public class LoaiModel
+    public class LoaiModelVM
     {
      
         [Required]
@@ -15,4 +15,9 @@ namespace MyWebApiApp.Models
         public string TenLoai { get; set; }
 
     }
+
+    public class LoaiModel : LoaiModelVM
+	{
+      public Guid IdLoai { get; set; }
+	}
 }

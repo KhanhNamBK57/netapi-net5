@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using MyWebApiApp.Data;
+using MyWebApiApp.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,6 +35,9 @@ namespace MyWebApiApp
             {
                 option.UseNpgsql(Configuration.GetConnectionString("MyDB"));
             });
+            services.AddScoped<ILoaiRepository, LoaiRepository>();
+            services.AddScoped<IHangHoaRepository, HangHoaRepository>();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MyWebApiApp", Version = "v1" });

@@ -28,5 +28,12 @@ namespace MyWebApiApp.Data
 
         [ForeignKey("IdLoai")]
         public Loai Loai { get; set; }
+
+        public ICollection<DonHangChiTiet> DonHangChiTiets { get; set; }
+
+        public HangHoa()
+        {
+            DonHangChiTiets = new List<DonHangChiTiet>();
+        }
     }
 }

@@ -11,8 +11,17 @@ namespace MyWebApiApp.Models
         public double DonGia { get; set; }
     }
 
-    public class HangHoaModel : HangHoaVM
+    public class HangHoa : HangHoaVM
     {
         public Guid IdHangHoa { get; set; }
+    }
+
+    public class HangHoaModel
+    {
+        public Guid IdHangHoa { get; set; }
+        public string TenHangHoa { get; set; }
+        public double DonGia { get; set; }
+        public string TenLoai { get; set; }
+
     }
 }

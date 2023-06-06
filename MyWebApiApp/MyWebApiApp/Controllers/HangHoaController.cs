@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MyWebApiApp.Data;
-using MyWebApiApp.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,13 +43,13 @@ namespace MyWebApiApp.Controllers
 			}
 		}
 		[HttpPost]
-		public IActionResult Create(HangHoaVM hangHoaVM)
+		public IActionResult Create(HangHoa hangHoa)
 		{
 			var hanghoa = new HangHoa
 			{
 				IdHangHoa = Guid.NewGuid(),
-				TenHangHoa = hangHoaVM.TenHangHoa,
-				DonGia = hangHoaVM.DonGia
+				TenHangHoa = hangHoa.TenHangHoa,
+				DonGia = hangHoa.DonGia
 			};
 			_context.Add(hanghoa);
 			_context.SaveChanges();

@@ -11,10 +11,12 @@ namespace MyWebApiApp.Data
         public MyDbContext(DbContextOptions options) : base(options) { }
 
         #region DBSet
+        public DbSet<NguoiDung> NguoiDungs { get; set; }
         public DbSet<HangHoa> HangHoas { get; set; }
         public DbSet<Loai> Loais { get; set; }
         public DbSet<DonHang> DonHangs { get; set; }
         public DbSet<DonHangChiTiet> DonHangChiTiets { get; set; }
+
         #endregion
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,6 +39,12 @@ namespace MyWebApiApp.Data
                       .WithMany(e=>e.DonHangChiTiets)
                       .HasForeignKey(e => e.IdHangHoa)
                       .HasConstraintName("FK_DonHangCT_HangHoa");
+            });
+
+            modelBuilder.Entity<NguoiDung>(entity =>
+            {
+                entity.HasIndex(e => e.UserName).IsUnique();
+                entity.Property(e => e.HoTen).IsRequired().HasMaxLength(150);
             });
         }
     }

@@ -8,6 +8,6 @@ namespace MyWebApiApp.Services
 {
     public interface IHangHoaRepository
     {
-        List<HangHoaModel> Search(string search);
+        List<HangHoaModel> Search(string search, int page = 1);
     }
 }

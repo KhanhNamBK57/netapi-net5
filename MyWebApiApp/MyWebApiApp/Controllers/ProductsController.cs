@@ -20,11 +20,11 @@ namespace MyWebApiApp.Controllers
         }
 
         [HttpGet]
-        public IActionResult SerchProducts(string search)
+        public IActionResult SerchProducts(string search, int page)
         {
             try
             {
-                var result = _hangHoaRepository.Search(search);
+                var result = _hangHoaRepository.Search(search, page);
                 return Ok(result);
             }
             catch

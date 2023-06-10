@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -50,7 +51,7 @@ namespace MyWebApiApp.Controllers
             }); ;
         }
         
-        private string GenerateToken(NguoiDung nguoiDung)
+        private async  Task<TokenModel> GenerateToken(NguoiDung nguoiDung)
         {
             var jwtTokenHandler = new JwtSecurityTokenHandler();
 
@@ -60,19 +61,53 @@ namespace MyWebApiApp.Controllers
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name,nguoiDung.HoTen),
-                    new Claim(ClaimTypes.Email,nguoiDung.Email),
+                    new Claim(JwtRegisteredClaimNames.Email,nguoiDung.Email),
+                    new Claim(JwtRegisteredClaimNames.Sub,nguoiDung.Email),
+                    new Claim(JwtRegisteredClaimNames.Jti,Guid.NewGuid().ToString()),
                     new Claim("UserNam", nguoiDung.UserName),
                     new Claim("Id", nguoiDung.Id.ToString()),
 
                     new Claim("TokenId", Guid.NewGuid().ToString())
                 }),
-                Expires = DateTime.UtcNow.AddMinutes(1),
+                Expires = DateTime.UtcNow.AddSeconds(30),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes),
                 SecurityAlgorithms.HmacSha512Signature)
              
             };
             var token = jwtTokenHandler.CreateToken(tokenDescription);
-            return jwtTokenHandler.WriteToken(token);
+            var accessToken = jwtTokenHandler.WriteToken(token);
+            var refreshToken = GenerateRefreshToken();
+
+            // Lưu vào db
+            var refeshTokenEntity = new RefreshToken
+            {
+                Id = Guid.NewGuid(),
+                JwtId= token.Id,
+                Token= refreshToken,
+                IsUsed =false,
+                IsRevoked = false,
+                IssuedAt = DateTime.UtcNow,
+                ExpiredAt = DateTime.UtcNow.AddHours(1)
+            };
+
+            await _context.AddAsync(refeshTokenEntity);
+            await _context.SaveChangesAsync();
+
+            return new TokenModel
+            {
+                AccessToken = accessToken,
+                RefreshToken = GenerateRefreshToken()
+            };
+        }
+
+        private string GenerateRefreshToken()
+        {
+            var random = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(random);
+                return Convert.ToBase64String(random); 
+            }
         }
     }
 }
